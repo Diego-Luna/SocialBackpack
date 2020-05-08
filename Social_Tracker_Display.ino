@@ -45,11 +45,6 @@ int subscriberCount; // create a variable to store the subscriber count
 char ssid[] = "Red";       // your network SSID (name)
 char password[] = "contraseña";  // your network key
 
-//Using curl to get bearer token
-// curl -u "$CONSUMER_KEY:$CONSUMER_SECRET" \
-//    --data 'grant_type=client_credentials' \
-//    'https://api.twitter.com/oauth2/token'
-
 WiFiClientSecure client;
 YoutubeApi api(API_KEY, client);
 InstagramStats instaStats(client);
@@ -92,7 +87,7 @@ String makeRequestGraph(){
   }
   
   String params = "?pretty=0&fields=fan_count&access_token="+String(ACCESS_TOKEN);
-  String path = "/v2.8/" + String(PAGE_ID);
+  String path = "/v7.0/" + String(PAGE_ID);
   String url = path + params;
   Serial.print("requesting URL: ");
   Serial.println(url);
@@ -185,10 +180,15 @@ void loop() {
 }
 
 void getInstagramStatsForUser() {
+  Serial.println(" ");
+  Serial.println("-----------Instagram-----------");
+
   Serial.println("Getting instagram user stats for " + userName );
   InstagramUserStats response = instaStats.getUserStats(userName);
   Serial.print("Number of followers: ");
   Serial.println(response.followedByCount);
+  Serial.println("-----------Instagram-----------");
+
   uint16_t hi = response.followedByCount / 10000, // Value on left (high digits) display
            lo = response.followedByCount % 10000; // Value on right (low digits) display
       disp[2].seg7.print(hi, DEC);   // Write values to each display...
@@ -216,6 +216,8 @@ void getInstagramStatsForUser() {
 void YoutubeSub(){
   if(api.getChannelStatistics(CHANNEL_ID))
     {
+      Serial.println(" ");
+      Serial.println("-----------Youtube-----------");
       Serial.println("---------Stats---------");
       Serial.print("Subscriber Count: ");
       Serial.println(api.channelStats.subscriberCount);
@@ -223,6 +225,8 @@ void YoutubeSub(){
       //Serial.print("hiddenSubscriberCount: ");
       //Serial.println(api.channelStats.hiddenSubscriberCount);
       Serial.println("------------------------");
+      Serial.println("-----------Youtube-----------");
+
       
       subscriberCount = api.channelStats.subscriberCount;
       
@@ -253,12 +257,16 @@ void YoutubeSub(){
 
 void Facebook(){
   if(requestNewState){
+    Serial.println(" ");
+    Serial.println("-----------Facebook-----------");
     Serial.println("Request new State");               
        
     int pageFansCountTemp = getPageFansCount();
     
     Serial.print("Page fans count: ");
     Serial.println(pageFansCountTemp);
+
+    Serial.println("-----------Facebook-----------");
     
     if(pageFansCountTemp <= 0){
       
